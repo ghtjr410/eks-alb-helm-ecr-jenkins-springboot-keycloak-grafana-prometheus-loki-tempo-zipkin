@@ -1,0 +1,1 @@
+export const KEYCLOAK_URL = () => `https://keycloak.ghtjr.com/`;
