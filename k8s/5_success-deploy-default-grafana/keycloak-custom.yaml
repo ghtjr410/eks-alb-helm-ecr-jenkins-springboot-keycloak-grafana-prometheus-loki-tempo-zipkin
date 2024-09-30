@@ -21,21 +21,21 @@ spec:
           - "--proxy=edge"  # Reverse proxy 설정
         env:
           - name: KEYCLOAK_ADMIN
-            value: <KC ADMIN>  # 관리자 계정 ID
+            value: admin  # 관리자 계정 ID
           - name: KEYCLOAK_ADMIN_PASSWORD
-            value: <KC ADMIN PWD>  # 관리자 계정 비밀번호
+            value: admin  # 관리자 계정 비밀번호
           - name: KC_HOSTNAME
             value: keycloak.ghtjr.com  # Keycloak의 외부 도메인
           - name: KC_DB
             value: mysql
           - name: KC_DB_URL_HOST
-            value: <DB ENDPOINT>
+            value: miniblog.cd0s00c26kii.ap-northeast-2.rds.amazonaws.com
           - name: KC_DB_URL_PORT
             value: '3306'
           - name: KC_DB_USERNAME
-            value: <DB USERNAME>
+            value: ghtjr410
           - name: KC_DB_PASSWORD
-            value: <DB PWD>
+            value: djaak410
         ports:
           - containerPort: 8080
 ---
