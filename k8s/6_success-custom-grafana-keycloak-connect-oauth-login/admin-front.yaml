@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-0923
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: test-0923
+  name: admin-front-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: admin-front-deployment
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: admin-front-deployment
+    spec:
+      containers:
+      - image: 017820660901.dkr.ecr.ap-northeast-2.amazonaws.com/admin-front:latest
+        imagePullPolicy: Always
+        name: admin-front-deployment
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: test-0923
+  name: admin-front-service
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: admin-front-deployment

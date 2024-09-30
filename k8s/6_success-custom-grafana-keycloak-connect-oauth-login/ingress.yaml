@@ -1,0 +1,55 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: 
+  namespace: test-0923
+  name: ingress-controller
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:017820660901:certificate/1f6e4daa-8ff5-41c3-adb7-b1b7841294bc
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
+spec:
+  ingressClassName: alb
+  rules:
+    - host: blog.ghtjr.com 
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: blog-front-service
+              port:
+                number: 80
+    - host: admin.ghtjr.com 
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: admin-front-service
+              port:
+                number: 80
+    - host: keycloak.ghtjr.com  # Keycloak에 대한 도메인 추가
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: keycloak-service  # Keycloak 서비스로 트래픽을 전달
+              port:
+                number: 8080  # Keycloak 서비스 포트
+    - host: grafana.ghtjr.com 
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: grafana-service
+              port:
+                number: 3000
