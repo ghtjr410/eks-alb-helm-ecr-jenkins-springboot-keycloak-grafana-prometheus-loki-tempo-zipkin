@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Keycloak from "keycloak-js";
+import axios from "axios";
+import { API_GATEWAY_URL, BLOG_URL, KEYCLOAK_URL } from "../utils/apiUrlUtil/apiUrlUtil";
 
 
 interface Props{
@@ -25,6 +27,7 @@ const CheckSsoHomepage:React.FC<Props> = ({keycloak}) => {
     };
     const handleOtherpage = () => {
         navigate("/other");
+        
     };
 
     const handleStatusInfo = () => {
@@ -47,10 +50,10 @@ const CheckSsoHomepage:React.FC<Props> = ({keycloak}) => {
             const codeChallenge = await generateCodeChallenge(codeVerifier);
     
             // Keycloak URL 설정
-            const keycloakBaseUrl = 'https://keycloak.ghtjr.com/';
+            const keycloakBaseUrl = KEYCLOAK_URL();
             const realmName = 'miniblog-realm';
             const keycloakClientId = 'service-client';
-            const keycloakRedirectURI = 'https://blog.ghtjr.com';
+            const keycloakRedirectURI = BLOG_URL();
     
             // URL 리디렉트 (delete_account AIA)
             window.location.href = `${keycloakBaseUrl}realms/${realmName}/protocol/openid-connect/auth?response_type=code&client_id=${keycloakClientId}&redirect_uri=${keycloakRedirectURI}&kc_action=delete_account&code_challenge=${codeChallenge}&code_challenge_method=S256`;
@@ -65,10 +68,10 @@ const CheckSsoHomepage:React.FC<Props> = ({keycloak}) => {
             const codeChallenge = await generateCodeChallenge(codeVerifier);
     
             // Keycloak URL 설정
-            const keycloakBaseUrl = 'https://keycloak.ghtjr.com/';
+            const keycloakBaseUrl = KEYCLOAK_URL();
             const realmName = 'miniblog-realm';
             const keycloakClientId = 'service-client';
-            const keycloakRedirectURI = 'https://blog.ghtjr.com';
+            const keycloakRedirectURI = BLOG_URL();
     
             // URL 리디렉트 (update_password AIA)            
             window.location.href = `${keycloakBaseUrl}realms/${realmName}/protocol/openid-connect/auth?client_id=${keycloakClientId}&redirect_uri=${keycloakRedirectURI}&response_type=code&scope=openid&kc_action=UPDATE_PASSWORD&code_challenge=${codeChallenge}&code_challenge_method=S256`;
@@ -96,9 +99,29 @@ const CheckSsoHomepage:React.FC<Props> = ({keycloak}) => {
             console.log("하이")
         }
     }, [keycloak?.authenticated]);
+
+    const handleGetUserProfile = async () => {
+        if (keycloak?.authenticated) {
+            const userId = keycloak.subject; // Keycloak에서 UUID 추출
+            const token = keycloak.token; // Keycloak 토큰 추출
+            console.log(token);
+            try {
+                const response = await axios.post(API_GATEWAY_URL()+`/api/user/user-profile/${userId}`, 
+                { bio: '안녕하세요, 이것은 새로운 bio입니다.' },
+                { headers: { Authorization: `Bearer ${token}` } } // 토큰 추가
+            );
+            console.log('GET Response:', response.data);
+          } catch (error) {
+            console.error('GET Error:', error);
+          }
+        }
+    };
     
     return (
         <div className="flex flex-col">
+            <button onClick={handleGetUserProfile} className="bg-blue-400 w-24">
+                GET UserProfile
+            </button>
             <h1>CheckSSO HomePage  변경사항 1</h1>
             <button onClick={handleStatusInfo}>Status Info</button>
             <h1>0 : {keycloak?.realm}</h1>
